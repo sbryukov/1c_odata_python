@@ -1,0 +1,83 @@
+# -*- coding: utf-8 -*-
+
+import urllib2
+import feedparser
+import requests
+import xml.etree.ElementTree as etree 
+
+from  odata1cparser import Odata1cObj
+
+
+
+
+class service(object):
+
+    def __init__(self, url, login, password):
+        self.url = url
+        self.login = login
+        self.password = password
+        self.workspace = self.get_workspace()
+
+        for key in self.workspace.keys():
+            setattr(self, key, Odata1cObj( self, key) )
+            statr = getattr(self, key)
+            statr.append_items(self.workspace[key])
+
+
+            #Четение всех таблиц из 1C Workspace только для таких как Catalog и Document
+            # for item in self.workspace[name]:
+            #     print item
+            #     setattr(self, item, Odata1cObj( self, name) )
+
+
+
+
+    def read (self, collection, entry):
+        if collection not in self.workspace.keys():
+            print '[ERROR] Workspace has no ', collection
+            return
+
+        if  entry not in  self.workspace[collection]:
+            print '[ERROR] %s has no '%(collection,), entry
+            return
+
+        query_url = self.url + collection+'_'+ entry
+        req = requests.get(query_url, auth=(self.login, self.password))
+        root = etree.fromstring(req.text.encode('utf-8'))
+        return root
+
+
+
+        
+    def get_workspace(self):
+        catalog_dict = list()
+        document_dict = list()
+
+        req = requests.get(self.url, auth=(self.login, self.password))
+        root = etree.fromstring(req.text.encode('utf-8'))
+
+        #print root[0][1]
+        #print root[0][1][0].text
+        
+        collections = root[0].findall('{http://www.w3.org/2007/app}collection')
+
+        for collection in collections:
+            txt =  collection[0].text
+            splitted = txt.split('_')
+
+            if 'Catalog' in splitted:
+                catalog_dict.append( txt.replace('Catalog_','') )
+            elif 'Document' in splitted:
+                document_dict.append( txt.replace('Document_','') )
+
+        workspace = {'Catalog' : catalog_dict, 'Document':document_dict}
+        return workspace
+
+
+
+        
+
+
+   
+
+
