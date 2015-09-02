@@ -3,7 +3,7 @@ import xml.etree.ElementTree as etree
 import requests
 
 
-url = 'http://95.79.53.147:9080/bit_nn123/odata/standard.odata/'
+url = 'http://localhost/odata/standard.odata/'
  
 service = odata1c.service(url=url, login='admin', password='')
 
