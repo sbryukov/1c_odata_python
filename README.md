@@ -9,4 +9,4 @@ service = odata1c.service(url=url, login='admin', password='')
 brands = service.Catalog['Brands']
 
 for i in brands['entry']['content']:
-	print i['Description']
+   print i['Description']
