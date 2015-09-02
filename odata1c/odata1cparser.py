@@ -8,24 +8,29 @@ class Obj1C(object):
 	def __init__(self, service, name):
 		self.service = service
 		self.name = name
-		self.items=dict()	
+		self.items=dict()
+		#self.load()	
 
 
 	def load(self):
 		#http://95.79.53.147:9080/bit_nn123/odata/standard.odata/Document_Order
-		for i in self.items:
-			print self.name, i
-			root = self.service.read(self.name, i)
-			self.parse_xml(root,i)
+		if self.name in self.service.workspace.keys():
+			print 'Downloading ',self.name, '...'
+			#self.items = self.service.get_workspace()[self.name]
+			for i in self.items:
+				print self.name, i
+				root = self.service.read(self.name, i)
+				self.parse_xml(root,i)
+
 		return self.items
 			
 
-	def parse_xml(self,xml,table):
-		entrys = xml.findall('{http://www.w3.org/2005/Atom}entry')
+	def parse_xml(self,root,table):
+		entrys = root.findall('{http://www.w3.org/2005/Atom}entry')
 		if len(entrys) > 0:
 			#print len(entrys)
 
-			self.items[table]['content']=list()
+			self.items[table]={'entry' : { 'content' : [] } }
 			
 
 			for entry in entrys:
@@ -38,10 +43,8 @@ class Obj1C(object):
 						key = prop.tag.split('}')[-1]
 						prop_dict[key]=prop.text
 				
-			    	self.items[table]['content'].append(prop_dict)
-			    	#print prop_dict
-
-			#print self.items[table]['content']	
+			    	self.items[table]['entry']['content'].append(prop_dict)
+		
 
 
 	def append_items(self, items):
@@ -52,8 +55,24 @@ class Obj1C(object):
 		return str(self.items)
 
 	def __getitem__(self,index):
-		print index
-		pass
+		
+		if index in self.service.workspace[self.name]:
+			print self.name+'_'+index
+		 	root = self.service.read(self.name, index)
+		 	print root.tag
+		 	self.parse_xml(root,index)
+		 	res = self.items[index]
+		else:
+			print index,' Not in ', self.name
+			res = {}
+		# if index in :
+		# 	print self.name+'_'+index
+		# 	root = self.service.read(self.name, index)
+		# 	print root.tag
+
+		return res
+
+
 
 
 
