@@ -6,8 +6,9 @@ url = 'http://localhost/odata/standard.odata/'
  
 service = odata1c.service(url=url, login='admin', password='')
 
-print service.workspace
+#print service.workspace
 
-print service.Catalog
+brands = service.Catalog['Brands']
 
-res = service.Catalog.load()
+for i in brands['entry']['content']:
+	print i['Description']
