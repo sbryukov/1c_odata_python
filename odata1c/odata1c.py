@@ -18,10 +18,10 @@ class service(object):
         self.password = password
         self.workspace = self.get_workspace()
 
-        for key in self.workspace.keys():
-            setattr(self, key, Odata1cObj( self, key) )
-            statr = getattr(self, key)
-            statr.append_items(self.workspace[key])
+        # for key in self.workspace.keys():
+        #     setattr(self, key, Odata1cObj( self, key) )
+        #     statr = getattr(self, key)
+        #     statr.append_items(self.workspace[key])
 
 
             #Четение всех таблиц из 1C Workspace только для таких как Catalog и Document
@@ -32,7 +32,7 @@ class service(object):
 
 
 
-    def read (self, collection, entry):
+    def read (self, collection='', entry=''):
         if collection not in self.workspace.keys():
             print '[ERROR] Workspace has no ', collection
             return
@@ -52,6 +52,8 @@ class service(object):
     def get_workspace(self):
         catalog_dict = list()
         document_dict = list()
+
+        #if element.find('...') is not None. 
 
         req = requests.get(self.url, auth=(self.login, self.password))
         root = etree.fromstring(req.text.encode('utf-8'))
@@ -73,6 +75,31 @@ class service(object):
         workspace = {'Catalog' : catalog_dict, 'Document':document_dict}
         return workspace
 
+    def __getattribute__(self, name):
+
+        try:
+            ret_res = super(service, self).__getattribute__(name)
+        except AttributeError:
+            workspace = super(service, self).__getattribute__('workspace')
+            if name in workspace.keys():
+                db1c = Odata1cObj( self, name)
+                #db1c.append_items(workspace[name])
+                #db1c.load()
+                setattr(self, name, db1c)
+                
+                #ret_res = db1c.load()
+                ret_res = db1c
+            
+        return ret_res
+
+       
+            #object.__getattribute__(self, 'workspace')
+        # if name in workspace:
+        #     db1c = object.__getattribute__(self, name)
+        #     print 'Downloading from 1C..'
+        #     return db1c.load()
+        # else:
+            
 
 
         
