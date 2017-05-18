@@ -1,1 +1,1 @@
-from odata1c import service
+from .odata1c import service
