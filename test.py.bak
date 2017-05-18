@@ -12,7 +12,7 @@ service = odata1c.service(url=url, login='admin', password='')
 catalogs = service.Catalog
 
 for i in catalogs['SKUGroup']['entry']['content']:
-	print(i)
+	print i
 #print service.Document['Order']
 
 

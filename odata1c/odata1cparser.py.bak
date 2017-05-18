@@ -15,10 +15,10 @@ class Obj1C(object):
 	def load(self):
 		#http://95.79.53.147:9080/bit_nn123/odata/standard.odata/Document_Order
 		if self.name in list(self.service.workspace.keys()):
-			print(('Downloading ',self.name, '...'))
+			print('Downloading ',self.name, '...')
 			#self.items = self.service.get_workspace()[self.name]
 			for i in self.items:
-				print((self.name, i))
+				print(self.name, i)
 				root = self.service.read(self.name, i)
 				self.parse_xml(root,i)
 
@@ -57,13 +57,13 @@ class Obj1C(object):
 	def __getitem__(self,index):
 		
 		if index in self.service.workspace[self.name]:
-			print((self.name+'_'+index))
+			print(self.name+'_'+index)
 		 	root = self.service.read(self.name, index)
-		 	print((root.tag))
+		 	print(root.tag)
 		 	self.parse_xml(root,index)
 		 	res = self.items[index]
 		else:
-			print((index,' Not in ', self.name))
+			print(index,' Not in ', self.name)
 			res = {}
 		# if index in :
 		# 	print self.name+'_'+index

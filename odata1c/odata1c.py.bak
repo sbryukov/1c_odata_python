@@ -34,11 +34,11 @@ class service(object):
 
     def read (self, collection='', entry=''):
         if collection not in list(self.workspace.keys()):
-            print(('[ERROR] Workspace has no ', collection))
+            print('[ERROR] Workspace has no ', collection)
             return
 
         if  entry not in  self.workspace[collection]:
-            print(('[ERROR] %s has no '%(collection,), entry))
+            print('[ERROR] %s has no '%(collection,), entry)
             return
 
         query_url = self.url + collection+'_'+ entry
